@@ -38,6 +38,7 @@ Prebuilt Linux and macOS binaries for x86-64 and ARM64 are available from [GitHu
 Commands use `.env` in the current directory by default. Use `--file` to select another existing dotenv file.
 
 ```sh
+enver ls
 enver get API_KEY
 enver inspect API_KEY
 enver list
@@ -45,6 +46,8 @@ enver --file path/to/.env get API_URL
 enver set API_URL https://example.com --visibility public
 enver set FEATURE_ENABLED true --visibility private
 ```
+
+`enver ls` discovers `.env` and `.env.*` files in the current directory without reading their contents. It returns a JSON array of filenames, suggested aliases, and whether each file could be opened for reading. It excludes visibility sidecars, directories, and broken symlinks. `.env` is suggested as `root`, while `.env.staging` is suggested as `staging`; `.env.root` has no alias to avoid a collision. These are labels only: continue to use the full path with `--file`. `ls` does not check whether the contents can be parsed. `enver list` remains the command for listing keys in one file.
 
 `get` and `inspect` currently produce the same JSON. For example, a private comma-separated value yields:
 

@@ -26,10 +26,13 @@ The installed executable is `enver`.
 ## Read configuration
 
 ```bash
+enver ls
 enver get KEY
 enver inspect KEY
 enver list
 ```
+
+`enver ls` discovers dotenv files in the current directory without reading their values. It returns filenames, suggested aliases, and whether each file could be opened for reading. Aliases are informational only; use the actual filename with `--file`. `enver list` lists keys in a selected file and may print public values.
 
 Use `--file PATH` for a dotenv file other than `.env`:
 

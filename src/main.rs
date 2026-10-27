@@ -25,6 +25,8 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
+    /// List dotenv files in the current directory without reading their contents.
+    Ls,
     /// Read a value, or metadata if it is private.
     Get { key: String },
     /// List keys and metadata. Values are only included for public keys.
@@ -76,11 +78,19 @@ impl Default for Visibility {
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
+    if matches!(cli.command, Command::Ls) {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&list_files(Path::new("."))?)?
+        );
+        return Ok(());
+    }
     let config = load_config(cli.config.as_deref())?;
     let mut env = read_env(&cli.file)?;
     let overrides = read_overrides(&cli.file)?;
 
     match cli.command {
+        Command::Ls => unreachable!(),
         Command::Get { key } | Command::Inspect { key } => {
             let result = describe(&key, env.get(&key), &config, overrides.get(&key));
             println!("{}", serde_json::to_string_pretty(&result)?);
@@ -111,6 +121,44 @@ fn main() -> Result<()> {
         }
     }
     Ok(())
+}
+
+#[derive(Serialize)]
+struct EnvFile {
+    file: String,
+    alias: Option<String>,
+    readable: bool,
+}
+
+fn list_files(directory: &Path) -> Result<Vec<EnvFile>> {
+    let mut files = Vec::new();
+    for entry in fs::read_dir(directory).context("cannot list current directory")? {
+        let entry = entry?;
+        let Some(name) = entry.file_name().to_str().map(str::to_owned) else {
+            continue;
+        };
+        let alias = if name == ".env" {
+            Some("root".to_string())
+        } else if let Some(suffix) = name.strip_prefix(".env.") {
+            if suffix.is_empty() || name.ends_with(".visibility.json") {
+                continue;
+            }
+            // `.env.root` would otherwise collide with the alias for `.env`.
+            (suffix != "root").then(|| suffix.to_string())
+        } else {
+            continue;
+        };
+        if !entry.path().is_file() {
+            continue;
+        }
+        files.push(EnvFile {
+            file: name,
+            alias,
+            readable: fs::File::open(entry.path()).is_ok(),
+        });
+    }
+    files.sort_by(|a, b| a.file.cmp(&b.file));
+    Ok(files)
 }
 
 fn describe(
