@@ -8,7 +8,20 @@ Use it to give an agent configuration metadata without returning values marked p
 
 ## Install
 
-With Rust and Cargo installed:
+**Ask your agent:**
+
+> Install https://github.com/danew/enver, including the `envctl` CLI and its agent skill, following the repository's installation instructions.
+
+Or install both yourself (requires Git, Rust/Cargo, and a C compiler):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/danew/enver/main/install.sh -o enver-install.sh
+sh enver-install.sh
+```
+
+Review the script before running it if desired. It installs `envctl` using Cargo (replacing an existing Cargo-installed `envctl`) and the skill into `~/.agents/skills/envctl`. Set `ENVCTL_SKILL_DIR` to a different skill directory if your agent uses another location. The installer refuses to overwrite an existing skill; remove or relocate it before upgrading. Ensure Cargo's bin directory is on your `PATH`. Your agent may need to restart to discover a newly installed skill.
+
+To install just the CLI from a local clone:
 
 ```sh
 git clone git@github.com:danew/enver.git
@@ -17,6 +30,8 @@ cargo install --path . --locked
 ```
 
 Ensure Cargo's bin directory is on your `PATH`. Alternatively run directly with `cargo run --manifest-path /path/to/enver/Cargo.toml -- <command>`.
+
+Prebuilt Linux and macOS binaries for x86-64 and ARM64 are available from [GitHub Releases](https://github.com/danew/enver/releases). Each successful push to `main` publishes a release tagged `v0.1.0-sha.<full-commit-sha>`; the tag identifies the commit, not a compatibility guarantee. Releases contain binaries only; use the installer above to install the skill too.
 
 ## Usage
 
