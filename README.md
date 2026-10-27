@@ -1,6 +1,6 @@
 # enver
 
-An experimental Rust CLI for inspecting and updating `.env` files with visibility-aware JSON output. The executable is named `envctl`.
+An experimental Rust CLI for inspecting and updating `.env` files with visibility-aware JSON output. The executable is named `enver`.
 
 Use it to give an agent configuration metadata without returning values marked private. Public values are returned in full; private values return only existence, inferred type, and format.
 
@@ -10,7 +10,7 @@ Use it to give an agent configuration metadata without returning values marked p
 
 **Ask your agent:**
 
-> Install https://github.com/danew/enver, including the `envctl` CLI and its agent skill, following the repository's installation instructions.
+> Install https://github.com/danew/enver, including the `enver` CLI and its agent skill, following the repository's installation instructions.
 
 Or install both yourself (requires Git, Rust/Cargo, and a C compiler):
 
@@ -19,7 +19,7 @@ curl -fsSL https://raw.githubusercontent.com/danew/enver/main/install.sh -o enve
 sh enver-install.sh
 ```
 
-Review the script before running it if desired. It installs `envctl` using Cargo (replacing an existing Cargo-installed `envctl`) and the skill into `~/.agents/skills/envctl`. Set `ENVCTL_SKILL_DIR` to a different skill directory if your agent uses another location. The installer refuses to overwrite an existing skill; remove or relocate it before upgrading. Ensure Cargo's bin directory is on your `PATH`. Your agent may need to restart to discover a newly installed skill.
+Review the script before running it if desired. It installs `enver` using Cargo (replacing an existing Cargo-installed `enver`) and the skill into `~/.agents/skills/enver`. Set `ENVER_SKILL_DIR` to a different skill directory if your agent uses another location. The installer refuses to overwrite an existing skill; remove or relocate it before upgrading. Ensure Cargo's bin directory is on your `PATH`. Your agent may need to restart to discover a newly installed skill.
 
 To install just the CLI from a local clone:
 
@@ -38,12 +38,12 @@ Prebuilt Linux and macOS binaries for x86-64 and ARM64 are available from [GitHu
 Commands use `.env` in the current directory by default. Use `--file` to select another existing dotenv file.
 
 ```sh
-envctl get API_KEY
-envctl inspect API_KEY
-envctl list
-envctl --file path/to/.env get API_URL
-envctl set API_URL https://example.com --visibility public
-envctl set FEATURE_ENABLED true --visibility private
+enver get API_KEY
+enver inspect API_KEY
+enver list
+enver --file path/to/.env get API_URL
+enver set API_URL https://example.com --visibility public
+enver set FEATURE_ENABLED true --visibility private
 ```
 
 `get` and `inspect` currently produce the same JSON. For example, a private comma-separated value yields:
@@ -80,6 +80,8 @@ In descending order of precedence:
 
 Global settings are read from the OS config directory (typically `~/.config/envctl/config.toml` on Linux). Override the path with `--config PATH`:
 
+The `envctl` config directory is retained for compatibility with earlier installations. Existing visibility sidecar files also continue to work.
+
 ```toml
 private_key_patterns = ["TOKEN", "SECRET", "PASSWORD", "DATABASE_URL"]
 public_key_patterns = ["^PUBLIC_"]
@@ -90,14 +92,14 @@ Patterns use Rust regex syntax and match substrings unless anchored. **Invalid p
 
 ## Security and current limitations
 
-- Protect `.env` using filesystem permissions. `envctl` must be able to read it and does not circumvent permissions. Private visibility affects CLI output only.
+- Protect `.env` using filesystem permissions. `enver` must be able to read it and does not circumvent permissions. Private visibility affects CLI output only.
 - Values passed to `set` are command-line arguments and may appear in shell history or process listings. There is currently no stdin or interactive secret input.
 - The sidecar contains variable names and visibility, not values. Protect it from unauthorized changes: a public entry can expose a secret.
 - The parser supports basic line-oriented `KEY=value` files and simple surrounding quotes. It does not fully implement dotenv quoting, escapes, inline comments, multiline values, or `export` syntax. Back up files and check compatibility before editing complex dotenv files.
 - Writes to the dotenv file and sidecar are separate and non-atomic. A failure can leave the value updated without the intended visibility. Avoid concurrent writes.
 - There is no sync command or separate secret store; `set` writes directly to the dotenv file.
 
-An agent skill is included at `.agents/skills/envctl/SKILL.md`; install or copy it into the location used by your agent harness.
+An agent skill is included at `.agents/skills/enver/SKILL.md`; install or copy it into the location used by your agent harness.
 
 ## Development
 

@@ -11,7 +11,7 @@ use url::Url;
 
 #[derive(Parser)]
 #[command(
-    name = "envctl",
+    name = "enver",
     about = "Read and update .env values without exposing private secrets"
 )]
 struct Cli {

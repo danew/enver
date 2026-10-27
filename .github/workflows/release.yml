@@ -35,10 +35,10 @@ jobs:
       - name: Package
         run: |
           mkdir -p dist
-          tar -czf "dist/envctl-${{ matrix.target }}.tar.gz" -C "target/${{ matrix.target }}/release" envctl
+          tar -czf "dist/enver-${{ matrix.target }}.tar.gz" -C "target/${{ matrix.target }}/release" enver
       - uses: actions/upload-artifact@v4
         with:
-          name: envctl-${{ matrix.target }}
+          name: enver-${{ matrix.target }}
           path: dist/*.tar.gz
           if-no-files-found: error
 

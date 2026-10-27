@@ -1,5 +1,5 @@
 [package]
-name = "envctl"
+name = "enver"
 version = "0.1.0"
 edition = "2021"
 description = "Safe, metadata-aware access to dotenv files"
