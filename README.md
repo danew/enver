@@ -36,9 +36,11 @@ Prebuilt Linux and macOS binaries for x86-64 and ARM64 are available from [GitHu
 ## Usage
 
 Commands use `.env` in the current directory by default. Use `--file` to select another existing dotenv file.
+Use `--cwd DIR` to run in another directory; relative `--file` and `--config` paths are resolved from that directory.
 
 ```sh
 enver ls
+enver --cwd ~/project ls
 enver get API_KEY
 enver inspect API_KEY
 enver list

@@ -15,6 +15,9 @@ use url::Url;
     about = "Read and update .env values without exposing private secrets"
 )]
 struct Cli {
+    /// Run as if started in this directory.
+    #[arg(long, global = true)]
+    cwd: Option<PathBuf>,
     #[arg(short, long, default_value = ".env", global = true)]
     file: PathBuf,
     #[arg(long, global = true)]
@@ -78,6 +81,10 @@ impl Default for Visibility {
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
+    if let Some(cwd) = &cli.cwd {
+        std::env::set_current_dir(cwd)
+            .with_context(|| format!("cannot change directory to {}", cwd.display()))?;
+    }
     if matches!(cli.command, Command::Ls) {
         println!(
             "{}",
